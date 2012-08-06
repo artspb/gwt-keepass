@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='KeePass4j'>
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name="com.googlecode.gwt.crypto.Crypto"/>
+  <source/>
+</module>
