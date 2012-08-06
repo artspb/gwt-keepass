@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="gwt" name="GWT">
+      <configuration>
+        <setting name="gwtSdkUrl" value="file://$USER_HOME$/tools/gwt-2.5.0.rc1" />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="cowj" />
+    <orderEntry type="library" name="Maven: com.googlecode.gwt.crypto:gwt-crypto:2.3.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode:crypto-gwt:1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.gwt:gwt-user:1.7.1" level="project" />
+    <orderEntry type="library" name="Maven: com.google.gwt:gwt-servlet:1.7.1" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode:gwt-async-future:1.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.7" level="project" />
+    <orderEntry type="library" name="gwt-user" level="project" />
+  </component>
+</module>
+
