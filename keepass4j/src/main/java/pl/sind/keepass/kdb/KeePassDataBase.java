@@ -14,12 +14,11 @@
  */
 package pl.sind.keepass.kdb;
 
-import java.io.IOException;
-import cowj.java.io.InputStream;
-
 import pl.sind.keepass.exceptions.KeePassDataBaseException;
+
+import java.io.IOException;
 
 public interface KeePassDataBase {
 	public void setPassword(String password);
-	public void setKeyFile(InputStream keyFile) throws IOException, KeePassDataBaseException;
+	public void setKeyFile(byte[] keyFile) throws IOException, KeePassDataBaseException;
 }

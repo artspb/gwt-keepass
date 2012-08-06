@@ -1,14 +1,12 @@
 package pl.sind.keepass;
 
-import static org.junit.Assert.assertArrayEquals;
-
 import org.junit.Test;
-
 import pl.sind.keepass.crypto.CipherException;
 import pl.sind.keepass.hash.Hash;
 
-public abstract class HashTestBase {
+import static org.junit.Assert.assertArrayEquals;
 
+public abstract class HashTestBase {
 	private String stringOne = "hash target string";
 	private String stringTwo = " another part of string";
 	private String both = stringOne + stringTwo;
@@ -28,21 +26,18 @@ public abstract class HashTestBase {
 	public void hashOne() throws CipherException {
 		byte[] result = hash.hash(stringOne.getBytes());
 		assertArrayEquals(hashOne, result);
-
 	}
 
 	@Test
 	public void hashTwo() throws CipherException {
 		byte[] result = hash.hash(stringTwo.getBytes());
 		assertArrayEquals(hashTwo, result);
-
 	}
 
 	@Test
 	public void hashBothSingle() throws CipherException {
 		byte[] result = hash.hash(both.getBytes());
 		assertArrayEquals(hashBoth, result);
-
 	}
 	
 	@Test
@@ -51,7 +46,5 @@ public abstract class HashTestBase {
 		hash.update(stringTwo.getBytes());
 		byte[] result = hash.digest();
 		assertArrayEquals(hashBoth, result);
-
 	}
-
 }

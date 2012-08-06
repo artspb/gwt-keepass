@@ -1,16 +1,15 @@
 package pl.sind.keepass;
 
-import static org.junit.Assert.assertArrayEquals;
-
-import java.util.Random;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
 import pl.sind.keepass.crypto.BcAESCipher;
 import pl.sind.keepass.hash.JdkSHA256Hash;
+
+import java.util.Random;
+
+import static org.junit.Assert.assertArrayEquals;
 
 @RunWith(JUnit4.class)
 public class CipherTest {
@@ -39,9 +38,7 @@ public class CipherTest {
 		byte[] result = cipher.encrypt(key, targetBytes, iv, 1,true);
 		assertArrayEquals(reference, result);
 	}
-	
-	
-	
+
 	@Test
 	public void decryptBc() throws Exception {
 		BcAESCipher cipher = new BcAESCipher();
@@ -66,6 +63,5 @@ public class CipherTest {
 		byte[] decrypted = cipher.decrypt(key, encrypted, iv);
 		
 		assertArrayEquals(source, decrypted);
-		
 	}
 }

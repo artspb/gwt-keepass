@@ -24,7 +24,6 @@ import java.util.Date;
  * 
  */
 public class Utils {
-
 	/**
 	 * Unpacks date stored in kdb format.
 	 * 
@@ -41,7 +40,7 @@ public class Utils {
 		int minute = ((d[3] & 0x0000000F) << 2) | ((d[4] >> 6) & 0x00000003);
 		int second = d[4] & 0x0000003F;
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(year, month-1, day, hour, minute, second);
+		calendar.set(year, month - 1, day, hour, minute, second);
 		calendar.set(Calendar.MILLISECOND, 0);
 		return calendar.getTime();
 	}
@@ -79,8 +78,8 @@ public class Utils {
 		int length = s.length() / 2;
 		byte[] bytes = new byte[length];
 		for (int i = 0; i < length; i++) {
-			bytes[i] = (byte) ((Character.digit(s.charAt(i * 2), 16) << 4) | Character
-					.digit(s.charAt((i * 2) + 1), 16));
+			bytes[i] = (byte) ((Character.digit(s.charAt(i * 2), 16) << 4)
+                    | Character.digit(s.charAt((i * 2) + 1), 16));
 		}
 		return bytes;
 	}
@@ -95,13 +94,13 @@ public class Utils {
 	 */
 	public static String toHexString(byte[] fieldData) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < fieldData.length; i++) {
-			int v = (fieldData[i] & 0xFF);
-			if (v <= 0xF) {
-				sb.append("0");
-			}
-			sb.append(Integer.toHexString(v));
-		}
+        for (byte aFieldData : fieldData) {
+            int v = (aFieldData & 0xFF);
+            if (v <= 0xF) {
+                sb.append("0");
+            }
+            sb.append(Integer.toHexString(v));
+        }
 		return sb.toString();
 	}
 
@@ -116,8 +115,6 @@ public class Utils {
 		return value;
 	}
 	
-	
-
 	public static byte[] intTobytes(int value) {
 		byte[] bytes = new byte[4];
 		intTobytes(value, bytes);
@@ -135,13 +132,11 @@ public class Utils {
 		bytes[1] = (byte) (value >> 8 & 0xff);
 		bytes[0] = (byte) (value & 0xff);
 	}
-	
-	
+
 	public static short bytesToShort(byte[] data) {
 		short value=(short) (data[1] & 0xff);
 		value <<= 8;
 		value|=(data[0] & 0xff);
 		return value;
 	}
-
 }

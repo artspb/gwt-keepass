@@ -1,7 +1,6 @@
 package pl.sind.keepass.kdb.v1;
 
 import cowj.java.nio.ByteBuffer;
-import cowj.java.nio.charset.Charset;
 
 public class TextField extends Field {
 

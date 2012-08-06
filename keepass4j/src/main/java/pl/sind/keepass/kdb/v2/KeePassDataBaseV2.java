@@ -14,18 +14,16 @@
  */
 package pl.sind.keepass.kdb.v2;
 
-import cowj.java.io.InputStream;
-
 import pl.sind.keepass.kdb.KeePassDataBase;
 
 public class KeePassDataBaseV2 implements KeePassDataBase {
 
-	public KeePassDataBaseV2(byte[] data, InputStream keyFile, String password) {
+	public KeePassDataBaseV2(byte[] data, byte[] keyFile, String password) {
 		super();
 		throw new RuntimeException("Unimplemented yet.");
 	}
 
-	public void setKeyFile(InputStream keyFile) {
+	public void setKeyFile(byte[] keyFile) {
 		// TODO Auto-generated method stub
 		
 	}

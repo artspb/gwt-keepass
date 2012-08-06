@@ -15,6 +15,7 @@
 package pl.sind.keepass.kdb.v1;
 
 import cowj.java.nio.ByteBuffer;
+
 import java.util.Arrays;
 
 public class Field {

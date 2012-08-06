@@ -1,22 +1,20 @@
 package pl.sind.keepass;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import pl.sind.keepass.util.Utils;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-import pl.sind.keepass.util.Utils;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
 public class UtilTest {
-
 	byte[] referenceBytes = new byte[] { 0x01, -49, -22, -75, -128, -75, 127,
 			88, -74, -122, 67, -41, 59, 24, 22, -101, -79, 88, -35, 111, 123,
 			-115, 40, 68, -75, -69, -34, -9, 98, 101, 0x00, (byte) 0xe3 };
@@ -44,8 +42,7 @@ public class UtilTest {
 		byte[] result = Utils.fromHexString(testString);
 		assertArrayEquals(source, result);
 	}
-	
-	
+
 	@Test
 	public void checkIntTrip() throws Exception {
 		Random r = new Random();
@@ -58,7 +55,6 @@ public class UtilTest {
 		
 		int bytesToInt = Utils.bytesToInt(intTobytes);
 		assertEquals(source, bytesToInt);
-		
 	}
 	
 	@Test
@@ -86,7 +82,5 @@ public class UtilTest {
 		System.err.println(c.getTimeInMillis());
 		System.out.println(start.equals(end));
 		assertEquals(start, end);
-		
 	}
-
 }

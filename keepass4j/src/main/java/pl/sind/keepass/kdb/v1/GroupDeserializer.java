@@ -14,13 +14,10 @@
  */
 package pl.sind.keepass.kdb.v1;
 
-import java.io.UnsupportedEncodingException;
 import cowj.java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
-import pl.sind.keepass.util.Utils;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 public class GroupDeserializer {
     private IdField groupId;

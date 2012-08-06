@@ -14,10 +14,10 @@
  */
 package pl.sind.keepass.hash;
 
+import pl.sind.keepass.crypto.CipherException;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import pl.sind.keepass.crypto.CipherException;
 
 public class JdkSHA256Hash implements Hash {
 	

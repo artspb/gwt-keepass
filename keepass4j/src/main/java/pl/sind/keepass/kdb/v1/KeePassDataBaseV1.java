@@ -14,20 +14,9 @@
  */
 package pl.sind.keepass.kdb.v1;
 
-import static pl.sind.keepass.kdb.KeePassConst.KDB_FILE_VERSION;
-import static pl.sind.keepass.kdb.KeePassConst.KDB_FILE_VERSION_CRITICAL_MASK;
-import static pl.sind.keepass.kdb.KeePassConst.KDB_FLAG_ARC4;
-import static pl.sind.keepass.kdb.KeePassConst.KDB_FLAG_TWOFISH;
-
-import java.io.IOException;
 import cowj.java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import cowj.java.nio.ByteBuffer;
 import cowj.java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import pl.sind.keepass.crypto.Cipher;
 import pl.sind.keepass.crypto.CipherException;
 import pl.sind.keepass.crypto.CipherFactory;
@@ -38,6 +27,14 @@ import pl.sind.keepass.hash.Hash;
 import pl.sind.keepass.hash.HashFactory;
 import pl.sind.keepass.kdb.KeePassDataBase;
 import pl.sind.keepass.util.Utils;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static pl.sind.keepass.kdb.KeePassConst.*;
 
 /**
  * KDB file database format reader.
@@ -59,8 +56,7 @@ public class KeePassDataBaseV1 implements KeePassDataBase {
 	private byte[] masterSeed2;
 	private byte[] encryptionIv;
 
-	public KeePassDataBaseV1(byte[] data, InputStream keyFile, String password)
-			throws UnsupportedDataBaseException, KeePassDataBaseException {
+	public KeePassDataBaseV1(byte[] data, byte[] keyFile, String password) throws KeePassDataBaseException {
 		super();
 
 		ByteBuffer bb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
@@ -174,39 +170,25 @@ public class KeePassDataBaseV1 implements KeePassDataBase {
 		}
 	}
 
-	public void setKeyFile(InputStream keyFile) throws KeePassDataBaseException {
-		if (keyFile != null) {
-			try {
-				byte[] buffer = new byte[2048];
-				int read = keyFile.read(buffer);
-				switch (read) {
-				case 32:
-                    System.arraycopy(buffer, 0, keyFileHash, 0, buffer.length);
-					return;
-				case 64:
-					keyFileHash = Utils
-							.fromHexString(new String(buffer, 0, 64));
-					return;
-				default:
-					hash.reset();
-					hash.update(buffer, 0, read);
-					if (read == buffer.length) {
-						while (read > 0) {
-							read = keyFile.read(buffer);
-							hash.update(buffer, 0, read);
-						}
-					}
-					keyFileHash = hash.digest();
-				}
-			} catch (IOException e) {
-				throw new KeePassDataBaseException("Unable to read key file.",
-						e);
-			}
-		} else {
-			keyFileHash = null;
-		}
-
-	}
+    public void setKeyFile(byte[] keyFile) throws KeePassDataBaseException {
+        if (keyFile != null) {
+            int length = keyFile.length;
+            switch (length) {
+                case 32:
+                    System.arraycopy(keyFile, 0, keyFileHash, 0, length);
+                    return;
+                case 64:
+                    keyFileHash = Utils.fromHexString(new String(keyFile, 0, 64));
+                    return;
+                default:
+                    hash.reset();
+                    hash.update(keyFile, 0, length);
+                    keyFileHash = hash.digest();
+            }
+        } else {
+            keyFileHash = null;
+        }
+    }
 
 	/**
 	 * Validates version and encryption flags.<br>
@@ -215,7 +197,7 @@ public class KeePassDataBaseV1 implements KeePassDataBase {
 	 */
 	private void validateHeader(HeaderV1 header)
 			throws UnsupportedDataBaseException {
-		if ((header.getVersion() & KDB_FILE_VERSION_CRITICAL_MASK) != (KDB_FILE_VERSION & KDB_FILE_VERSION_CRITICAL_MASK)) {
+		if (header.getVersion() != KDB_FILE_VERSION) {
 			throw new UnsupportedDataBaseException("Invalid database version " + header.getVersion() + ". Only " + KDB_FILE_VERSION + " version is supported");
 		}
 		int flags = header.getFlags();
