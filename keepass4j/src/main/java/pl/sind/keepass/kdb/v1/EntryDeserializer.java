@@ -14,8 +14,9 @@
  */
 package pl.sind.keepass.kdb.v1;
 
-import java.io.UnsupportedEncodingException;
 import cowj.java.nio.ByteBuffer;
+
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 public class EntryDeserializer {

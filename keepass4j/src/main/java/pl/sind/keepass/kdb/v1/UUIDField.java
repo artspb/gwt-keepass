@@ -1,7 +1,6 @@
 package pl.sind.keepass.kdb.v1;
 
 import cowj.java.nio.ByteBuffer;
-
 import pl.sind.keepass.util.Utils;
 
 public class UUIDField extends Field {

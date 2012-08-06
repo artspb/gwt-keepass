@@ -8,18 +8,19 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.vectomatic.arrays.ArrayBuffer;
 import org.vectomatic.arrays.DataView;
-import org.vectomatic.arrays.Float32Array;
-import org.vectomatic.arrays.Uint32Array;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.FileUploadExt;
-import org.vectomatic.file.FileUtils;
 import org.vectomatic.file.events.LoadEndEvent;
 import org.vectomatic.file.events.LoadEndHandler;
 import pl.sind.keepass.exceptions.KeePassDataBaseException;
+import pl.sind.keepass.kdb.KeePassDataBase;
+import pl.sind.keepass.kdb.KeePassDataBaseFactory;
+import pl.sind.keepass.kdb.v1.Entry;
+import pl.sind.keepass.kdb.v1.Group;
 import pl.sind.keepass.kdb.v1.KeePassDataBaseV1;
 
-import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>
@@ -44,6 +45,8 @@ public class KeePassEditor implements EntryPoint {
                     reader.addLoadEndHandler(new LoadEndHandler() {
                         public void onLoadEnd(LoadEndEvent event) {
                             if (reader.getError() == null) {
+                                String s = "";
+
                                 try {
                                     ArrayBuffer buffer = reader.getArrayBufferResult();
                                     DataView dataView = DataView.createDataView(buffer);
@@ -51,11 +54,18 @@ public class KeePassEditor implements EntryPoint {
                                     for (int i = 0; i < dataView.getByteLength(); i++) {
                                         bytes[i] = dataView.getInt8(i);
                                     }
-                                    new KeePassDataBaseV1(bytes, null, "testing");
+
+                                    KeePassDataBase base = KeePassDataBaseFactory.loadDataBase(bytes, null, "testing");
+                                    if (base instanceof KeePassDataBaseV1) {
+                                        KeePassDataBaseV1 v1 = (KeePassDataBaseV1) base;
+                                        List<Entry> entries = v1.getEntries();
+                                        List<Group> groups = v1.getGroups();
+                                    }
                                 } catch (KeePassDataBaseException e) {
                                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                                 }
-                                label.setText("");
+
+                                label.setText(s);
                             }
                         }
                     });

@@ -1,9 +1,9 @@
 package pl.sind.keepass.kdb.v1;
 
 import cowj.java.nio.ByteBuffer;
-import java.util.Date;
-
 import pl.sind.keepass.util.Utils;
+
+import java.util.Date;
 
 public class DateField extends Field {
 
