@@ -19,13 +19,63 @@
         </repository>
     </repositories>
 
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.java</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>2.5.0-rc1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>com.cowlark</groupId>
             <artifactId>cowj</artifactId>
             <version>0.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode</groupId>
+            <artifactId>gwt-time</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
 
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>2.5.0-rc1</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.googlecode.gwt.crypto</groupId>
             <artifactId>gwt-crypto</artifactId>

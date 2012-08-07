@@ -14,7 +14,8 @@
  */
 package pl.sind.keepass.util;
 
-import java.util.Calendar;
+import org.gwttime.time.DateTime;
+
 import java.util.Date;
 
 /**
@@ -39,24 +40,21 @@ public class Utils {
 		int hour = ((d[2] & 0x00000001) << 4) | ((d[3] >> 4) & 0x0000000F);
 		int minute = ((d[3] & 0x0000000F) << 2) | ((d[4] >> 6) & 0x00000003);
 		int second = d[4] & 0x0000003F;
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(year, month - 1, day, hour, minute, second);
-		calendar.set(Calendar.MILLISECOND, 0);
-		return calendar.getTime();
+        DateTime dateTime = new DateTime(year, month - 1, day, hour, minute, second);
+        return dateTime.toDate();
 	}
 
 	public static byte[] packDate(Date date) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
+        DateTime dateTime = new DateTime(date);
 		// Byte bits: 00000000 11111111 22222222 33333333 44444444
 		// Contents : 00YYYYYY YYYYYYMM MMDDDDDH HHHHMMMM MMSSSSSS
 		byte[] bytes = new byte[5];
-		int s = c.get(Calendar.SECOND);
-		int m = c.get(Calendar.MINUTE);
-		int h = c.get(Calendar.HOUR_OF_DAY);
-		int d = c.get(Calendar.DATE);
-		int mm = c.get(Calendar.MONTH) + 1;
-		int y = c.get(Calendar.YEAR);
+		int s = dateTime.getSecondOfMinute();
+		int m = dateTime.getMinuteOfHour();
+		int h = dateTime.getHourOfDay();
+		int d = dateTime.getDayOfMonth();
+		int mm = dateTime.getMonthOfYear() + 1;
+		int y = dateTime.getYear();
 
 		bytes[4] = (byte) ((m << 6) | s); 
 		bytes[3] = (byte) ((m >> 2 )| (h<<4));

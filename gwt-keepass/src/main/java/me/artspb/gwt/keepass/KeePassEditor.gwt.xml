@@ -3,9 +3,9 @@
 <module rename-to="KeePassEditor">
     <!-- Inherit the core Web Toolkit stuff.                  -->
     <inherits name='com.google.gwt.user.User'/>
-    <inherits name="org.vectomatic.libgwtfile"/>
     <inherits name="cowj.Cowj"/>
     <inherits name="pl.sind.keepass.KeePass4j"/>
+    <inherits name="org.vectomatic.libgwtfile"/>
     <!-- Specify the app entry point class.                   -->
     <entry-point class='me.artspb.gwt.keepass.client.KeePassEditor'/>
 </module>

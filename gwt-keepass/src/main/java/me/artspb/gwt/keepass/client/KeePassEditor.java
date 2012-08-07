@@ -3,9 +3,7 @@ package me.artspb.gwt.keepass.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.*;
 import org.vectomatic.arrays.ArrayBuffer;
 import org.vectomatic.arrays.DataView;
 import org.vectomatic.file.File;
@@ -72,6 +70,11 @@ public class KeePassEditor implements EntryPoint {
                 }
             }
         });
+
+//        SplitLayoutPanel p = new SplitLayoutPanel();
+//        p.addWest(new HTML("navigation"), 128);
+//        p.addNorth(new HTML("list"), 384);
+//        p.add(new HTML("details"));
 
         RootPanel.get("slot2").add(button);
         RootPanel.get("slot3").add(label);
