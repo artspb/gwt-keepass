@@ -4,6 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>gwt-keepass</groupId>
+        <artifactId>gwt-keepass-parent</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+
     <groupId>com.googlecode</groupId>
     <artifactId>gwt-time</artifactId>
     <version>0.1-SNAPSHOT</version>
@@ -35,7 +41,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>2.5.0-rc1</version>
+                <version>${gwtVersion}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -51,7 +57,7 @@
         <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-user</artifactId>
-            <version>2.5.0-rc1</version>
+            <version>${gwtVersion}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
