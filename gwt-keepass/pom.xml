@@ -86,7 +86,7 @@
         <dependency>
             <groupId>org.vectomatic</groupId>
             <artifactId>lib-gwt-file</artifactId>
-            <version>0.3.1</version>
+            <version>0.3.3</version>
             <scope>provided</scope>
         </dependency>
 

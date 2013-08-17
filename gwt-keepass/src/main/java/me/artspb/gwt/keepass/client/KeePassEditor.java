@@ -3,9 +3,10 @@ package me.artspb.gwt.keepass.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.typedarrays.client.Int8ArrayNative;
+import com.google.gwt.typedarrays.shared.ArrayBuffer;
+import com.google.gwt.typedarrays.shared.Int8Array;
 import com.google.gwt.user.client.ui.*;
-import org.vectomatic.arrays.ArrayBuffer;
-import org.vectomatic.arrays.DataView;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.FileUploadExt;
@@ -18,7 +19,9 @@ import pl.sind.keepass.kdb.v1.Entry;
 import pl.sind.keepass.kdb.v1.Group;
 import pl.sind.keepass.kdb.v1.KeePassDataBaseV1;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>
@@ -29,55 +32,101 @@ public class KeePassEditor implements EntryPoint {
      * This is the entry point method.
      */
     public void onModuleLoad() {
-        final Button button = new Button("Click me");
+        final FileUploadExt dbUpload = new FileUploadExt(false);
+        final FileUploadExt keyUpload = new FileUploadExt(false);
+        final PasswordTextBox passwordTextBox = new PasswordTextBox();
+        final Button button = new Button("load");
         final Label label = new Label();
-        final FileUploadExt fileUpload = new FileUploadExt();
+        final Tree tree = new Tree();
 
-        final FileReader reader = new FileReader();
+        final byte[][] key = {new byte[0]};
 
-        button.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                for (File file : fileUpload.getFiles()) {
-                    reader.readAsArrayBuffer(file);
+        final FileReader dbReader = new FileReader();
+        dbReader.addLoadEndHandler(new LoadEndHandler() {
+            public void onLoadEnd(LoadEndEvent event) {
+                String s = "";
+                if (dbReader.getError() == null) {
+                    tree.clear();
+                    try {
+                        ArrayBuffer buffer = dbReader.getArrayBufferResult();
+                        Int8Array array = Int8ArrayNative.create(buffer);
+                        byte[] bytes = new byte[array.length()];
+                        for (int i = 0; i < array.length(); i++) {
+                            bytes[i] = array.get(i);
+                        }
 
-                    reader.addLoadEndHandler(new LoadEndHandler() {
-                        public void onLoadEnd(LoadEndEvent event) {
-                            if (reader.getError() == null) {
-                                String s = "";
+                        String password = passwordTextBox.getText();
+                        KeePassDataBase base = KeePassDataBaseFactory.loadDataBase(bytes, key[0].length == 0 ? null : key[0], password.length() == 0 ? null : password);
+                        if (base instanceof KeePassDataBaseV1) {
+                            KeePassDataBaseV1 v1 = (KeePassDataBaseV1) base;
+                            List<Entry> entries = v1.getEntries();
+                            List<Group> groups = v1.getGroups();
+                            s = "entries: " + entries.size() + ", groups: " + groups.size();
 
-                                try {
-                                    ArrayBuffer buffer = reader.getArrayBufferResult();
-                                    DataView dataView = DataView.createDataView(buffer);
-                                    byte[] bytes = new byte[dataView.getByteLength()];
-                                    for (int i = 0; i < dataView.getByteLength(); i++) {
-                                        bytes[i] = dataView.getInt8(i);
-                                    }
-
-                                    KeePassDataBase base = KeePassDataBaseFactory.loadDataBase(bytes, null, "testing");
-                                    if (base instanceof KeePassDataBaseV1) {
-                                        KeePassDataBaseV1 v1 = (KeePassDataBaseV1) base;
-                                        List<Entry> entries = v1.getEntries();
-                                        List<Group> groups = v1.getGroups();
-                                    }
-                                } catch (KeePassDataBaseException e) {
-                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                            HashMap<Integer, HasTreeItems> treeGroups = new HashMap<Integer, HasTreeItems>();
+                            Map<Integer, HasTreeItems> map = new HashMap<Integer, HasTreeItems>();
+                            map.put(-1, tree);
+                            for (Group group : groups) {
+                                TreeItem item = new TreeItem(group.getGroupName().getText());
+                                short level = group.getLevel().getLevel();
+                                HasTreeItems parent = map.get(level - 1);
+                                parent.addItem(item);
+                                map.put((int) level, item);
+                                treeGroups.put(group.getGroupId().getId(), item);
+                            }
+                            for (Entry entry : entries) {
+                                if (!entry.getTitle().getText().equals("Meta-Info")) {
+                                    HasTreeItems parent = treeGroups.get(entry.getGroupId().getId());
+                                    parent.addTextItem(entry.getTitle().getText());
                                 }
-
-                                label.setText(s);
                             }
                         }
-                    });
+                    } catch (KeePassDataBaseException e) {
+                        s = "error: " + e.getMessage();
+                    }
+
+                } else {
+                    s =  "file upload error code: " + dbReader.getError().getCode();
                 }
+                label.setText(s);
             }
         });
 
-//        SplitLayoutPanel p = new SplitLayoutPanel();
-//        p.addWest(new HTML("navigation"), 128);
-//        p.addNorth(new HTML("list"), 384);
-//        p.add(new HTML("details"));
+        final FileReader keyReader = new FileReader();
+        keyReader.addLoadEndHandler(new LoadEndHandler() {
+            public void onLoadEnd(LoadEndEvent event) {
+                String s = "";
+                if (keyReader.getError() == null) {
+                    ArrayBuffer buffer = keyReader.getArrayBufferResult();
+                    Int8Array array = Int8ArrayNative.create(buffer);
+                    byte[] bytes = new byte[array.length()];
+                    for (int i = 0; i < array.length(); i++) {
+                        bytes[i] = array.get(i);
+                    }
+                    key[0] = bytes;
+                } else {
+                    s =  "file upload error code: " + keyReader.getError().getCode();
+                }
+                label.setText(s);
+            }
+        });
 
-        RootPanel.get("slot2").add(button);
-        RootPanel.get("slot3").add(label);
-        RootPanel.get("slot1").add(fileUpload);
+        button.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                label.setText("");
+                File keyFile = keyUpload.getFiles().getItem(0);
+                keyReader.readAsArrayBuffer(keyFile);
+                File dbFile = dbUpload.getFiles().getItem(0);
+                dbReader.readAsArrayBuffer(dbFile);
+            }
+        });
+
+        RootPanel.get("slot1").add(dbUpload);
+        RootPanel.get("slot2").add(keyUpload);
+        RootPanel.get("slot3").add(passwordTextBox);
+        RootPanel.get("slot4").add(button);
+        RootPanel.get("slot5").add(label);
+
+        RootPanel.get("tree").add(tree);
     }
 }
