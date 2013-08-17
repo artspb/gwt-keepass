@@ -1,4 +1,4 @@
-package me.artspb.gwt.keepass.client;
+package me.artspb.gwt.keepass.client.ui;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -36,5 +36,13 @@ public class KeePassDataBaseTreeItem extends TreeItem {
 
     public boolean isEntry() {
         return entry != null;
+    }
+
+    public Entry getEntry() {
+        return entry;
+    }
+
+    public Group getGroup() {
+        return group;
     }
 }

@@ -1,4 +1,4 @@
-package me.artspb.gwt.keepass.client;
+package me.artspb.gwt.keepass.client.ui;
 
 import com.google.gwt.user.client.ui.HasTreeItems;
 import com.google.gwt.user.client.ui.Tree;

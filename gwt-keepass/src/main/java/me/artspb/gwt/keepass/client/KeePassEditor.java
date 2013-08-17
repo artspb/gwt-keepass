@@ -3,6 +3,8 @@ package me.artspb.gwt.keepass.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.ui.*;
 import me.artspb.gwt.keepass.client.handler.DataBaseLoadEndHandler;
 import me.artspb.gwt.keepass.client.handler.KeyLoadEndHandler;
@@ -10,16 +12,20 @@ import me.artspb.gwt.keepass.client.interfaces.CredentialsProvider;
 import me.artspb.gwt.keepass.client.interfaces.DataBaseAcceptor;
 import me.artspb.gwt.keepass.client.interfaces.MessageAcceptor;
 import me.artspb.gwt.keepass.client.interfaces.KeyAcceptor;
+import me.artspb.gwt.keepass.client.ui.EntryVerticalPanel;
+import me.artspb.gwt.keepass.client.ui.KeePassDataBaseTreeItem;
+import me.artspb.gwt.keepass.client.ui.KeePassDataBaseV1Tree;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.FileUploadExt;
 import pl.sind.keepass.kdb.KeePassDataBase;
+import pl.sind.keepass.kdb.v1.Entry;
 import pl.sind.keepass.kdb.v1.KeePassDataBaseV1;
 
 /**
  * @author Artem Khvastunov
  */
-public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvider, KeyAcceptor, DataBaseAcceptor, MessageAcceptor {
+public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvider, KeyAcceptor, DataBaseAcceptor, MessageAcceptor, SelectionHandler<TreeItem> {
 
     private final FileUploadExt dbUpload = new FileUploadExt(false);
     private final FileUploadExt keyUpload = new FileUploadExt(false);
@@ -28,6 +34,10 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
     private final Label label = new Label();
 
     private final KeePassDataBaseV1Tree tree = new KeePassDataBaseV1Tree();
+
+    private final SplitLayoutPanel mainPanel = new SplitLayoutPanel();
+    private final Panel uploadPanel = new HorizontalPanel();
+    private final Panel entryPanel = new FlowPanel();
 
     private final FileReader keyReader = new FileReader();
     private final FileReader dbReader = new FileReader();
@@ -38,14 +48,19 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
         keyReader.addLoadEndHandler(new KeyLoadEndHandler(keyReader, this));
         dbReader.addLoadEndHandler(new DataBaseLoadEndHandler(dbReader, this, this));
         button.addClickHandler(this);
+        tree.addSelectionHandler(this);
 
-        RootPanel.get("slot1").add(dbUpload);
-        RootPanel.get("slot2").add(keyUpload);
-        RootPanel.get("slot3").add(passwordTextBox);
-        RootPanel.get("slot4").add(button);
-        RootPanel.get("slot5").add(label);
+        uploadPanel.add(dbUpload);
+        uploadPanel.add(keyUpload);
+        uploadPanel.add(passwordTextBox);
+        uploadPanel.add(button);
 
-        RootPanel.get("tree").add(tree);
+        mainPanel.addNorth(uploadPanel, 384);
+        mainPanel.addSouth(label, 100);
+        mainPanel.addWest(tree, 128);
+        mainPanel.add(entryPanel);
+
+        RootLayoutPanel.get().add(mainPanel);
     }
 
     public void onClick(ClickEvent event) {
@@ -79,5 +94,13 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
 
     public void setMessage(String error) {
         label.setText(error);
+    }
+
+    public void onSelection(SelectionEvent<TreeItem> event) {
+        KeePassDataBaseTreeItem item = (KeePassDataBaseTreeItem) event.getSelectedItem();
+        if (item.isEntry()) {
+            Entry entry = item.getEntry();
+            entryPanel.add(new EntryVerticalPanel(entry));
+        }
     }
 }
