@@ -5,6 +5,7 @@ import com.google.gwt.typedarrays.shared.ArrayBuffer;
 import com.google.gwt.typedarrays.shared.Int8Array;
 import me.artspb.gwt.keepass.client.interfaces.CredentialsProvider;
 import me.artspb.gwt.keepass.client.interfaces.DataBaseAcceptor;
+import me.artspb.gwt.keepass.client.ui.messages.ErrorMessage;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.events.LoadEndEvent;
 import org.vectomatic.file.events.LoadEndHandler;
@@ -40,10 +41,10 @@ public class DataBaseLoadEndHandler implements LoadEndHandler {
                 KeePassDataBase base = KeePassDataBaseFactory.loadDataBase(bytes, holder.getKey(), password.length() == 0 ? null : password);
                 acceptor.setDataBase(base);
             } catch (KeePassDataBaseException e) {
-                acceptor.setErrorMessage("error: " + e.getMessage());
+                acceptor.setMessage(new ErrorMessage(e.getMessage(), true));
             }
         } else {
-            acceptor.setErrorMessage("file upload error code: " + reader.getError().getCode());
+            acceptor.setMessage(new ErrorMessage("File upload error: " + reader.getError().getCode().name(), true));
         }
     }
 }

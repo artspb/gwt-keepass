@@ -3,6 +3,10 @@ package me.artspb.gwt.keepass.client.ui;
 import com.github.gwtbootstrap.client.ui.Label;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.*;
 import pl.sind.keepass.kdb.v1.Entry;
 
@@ -46,10 +50,7 @@ public class EntryVerticalPanel extends VerticalPanel {
     private HorizontalPanel getPanel(String name, Date content) {
         HorizontalPanel panel = new HorizontalPanel();
         panel.add(new Label(name));
-        DateTimeBox dateTimeBox = new DateTimeBox();
-        dateTimeBox.setValue(content);
-        dateTimeBox.setReadOnly(true);
-        panel.add(dateTimeBox);
+        panel.add(new ReadOnlyDateTimeBox(content));
         return panel;
     }
 

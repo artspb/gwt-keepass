@@ -1,7 +1,6 @@
 package me.artspb.gwt.keepass.client;
 
 import com.github.gwtbootstrap.client.ui.*;
-import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -14,12 +13,14 @@ import me.artspb.gwt.keepass.client.handler.DataBaseLoadEndHandler;
 import me.artspb.gwt.keepass.client.handler.KeyLoadEndHandler;
 import me.artspb.gwt.keepass.client.interfaces.CredentialsProvider;
 import me.artspb.gwt.keepass.client.interfaces.DataBaseAcceptor;
-import me.artspb.gwt.keepass.client.interfaces.ErrorMessageAcceptor;
 import me.artspb.gwt.keepass.client.interfaces.KeyAcceptor;
 import me.artspb.gwt.keepass.client.ui.BootstrapFileUpload;
 import me.artspb.gwt.keepass.client.ui.DataBaseTreeItem;
 import me.artspb.gwt.keepass.client.ui.DataBaseV1Tree;
 import me.artspb.gwt.keepass.client.ui.EntryVerticalPanel;
+import me.artspb.gwt.keepass.client.ui.messages.Message;
+import me.artspb.gwt.keepass.client.ui.messages.SuccessMessage;
+import me.artspb.gwt.keepass.client.ui.messages.WarningMessage;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.FileUploadExt;
@@ -30,7 +31,7 @@ import pl.sind.keepass.kdb.v1.KeePassDataBaseV1;
 /**
  * @author Artem Khvastunov
  */
-public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvider, KeyAcceptor, DataBaseAcceptor, ErrorMessageAcceptor, SelectionHandler<TreeItem> {
+public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvider, KeyAcceptor, DataBaseAcceptor, SelectionHandler<TreeItem> {
 
     private final FileUploadExt dbUpload = new BootstrapFileUpload();
     private final FileUploadExt keyUpload = new BootstrapFileUpload();
@@ -50,6 +51,7 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
         button.setText("load");
         button.setLoadingText("loading...");
         button.setCompleteText("loaded");
+        button.setBlock(true);
 
         keyReader.addLoadEndHandler(new KeyLoadEndHandler(keyReader, this));
         dbReader.addLoadEndHandler(new DataBaseLoadEndHandler(dbReader, this, this));
@@ -57,24 +59,22 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
         button.addClickHandler(this);
         tree.addSelectionHandler(this);
 
-        button.setBlock(true);
-
-        Container container = new Container();
-        Row row = new Row();
+        Container container = new FluidContainer();
+        Row row = new FluidRow();
         row.add(new Column(6, alertPanel));
         container.add(row);
-        row = new Row();
+        row = new FluidRow();
         row.add(new Column(3, dbUpload));
         row.add(new Column(3, keyUpload));
         container.add(row);
-        row = new Row();
+        row = new FluidRow();
         row.add(new Column(3, passwordTextBox));
         row.add(new Column(3, button));
         container.add(row);
-        row = new Row();
+        row = new FluidRow();
         row.add(new Column(6));
         container.add(row);
-        row = new Row();
+        row = new FluidRow();
         row.add(new Column(3, tree));
         row.add(new Column(3, entryPanel));
         container.add(row);
@@ -82,7 +82,7 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
     }
 
     public void onClick(ClickEvent event) {
-        reset("");
+        reset();
         button.state().loading();
 
         File keyFile = keyUpload.getFiles().getItem(0);
@@ -103,6 +103,7 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
 
     public void setDataBase(KeePassDataBase dataBase) {
         button.state().complete();
+        showMessage(new SuccessMessage("Database has been successfully loaded."));
         tree.apply((KeePassDataBaseV1) dataBase);
     }
 
@@ -112,7 +113,15 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
         if (dbFile != null) {
             dbReader.readAsArrayBuffer(dbFile);
         } else {
-            reset("Nothing to load.");
+            reset(new WarningMessage("Nothing to load."));
+        }
+    }
+
+    public void setMessage(Message message) {
+        if (message.isCriticalError()) {
+            reset(message);
+        } else {
+            showMessage(message);
         }
     }
 
@@ -125,24 +134,22 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
         }
     }
 
-    public void setErrorMessage(String errorMessage) {
-        reset(errorMessage);
+    private void reset() {
+        reset(null);
     }
 
-    private void reset(String message) {
-        if (message.length() > 0) {
-            Alert alert = new Alert();
-            alert.setType(AlertType.WARNING);
-            alert.setHeading("Warning!");
-            alert.setText(message);
-            alert.setAnimation(true);
-            alertPanel.add(alert);
-        } else {
-            alertPanel.clear();
-        }
-
+    private void reset(Message message) {
+        showMessage(message);
         tree.clear();
         entryPanel.clear();
         button.state().reset();
+    }
+
+    private void showMessage(Message message) {
+        if (message != null) {
+            alertPanel.add(message);
+        } else {
+            alertPanel.clear();
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.google.gwt.typedarrays.client.Int8ArrayNative;
 import com.google.gwt.typedarrays.shared.ArrayBuffer;
 import com.google.gwt.typedarrays.shared.Int8Array;
 import me.artspb.gwt.keepass.client.interfaces.KeyAcceptor;
+import me.artspb.gwt.keepass.client.ui.messages.ErrorMessage;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.events.LoadEndEvent;
 import org.vectomatic.file.events.LoadEndHandler;
@@ -31,7 +32,7 @@ public class KeyLoadEndHandler implements LoadEndHandler {
             }
             acceptor.setKey(key);
         } else {
-            acceptor.setErrorMessage("file upload error code: " + reader.getError().getCode());
+            acceptor.setMessage(new ErrorMessage("File upload error: " + reader.getError().getCode().name(), true));
         }
     }
 }
