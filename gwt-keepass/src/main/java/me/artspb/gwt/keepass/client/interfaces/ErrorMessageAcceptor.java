@@ -3,7 +3,7 @@ package me.artspb.gwt.keepass.client.interfaces;
 /**
  * @author Artem Khvastunov
  */
-public interface MessageAcceptor {
+public interface ErrorMessageAcceptor {
 
-    void setMessage(String error);
+    void setErrorMessage(String error);
 }

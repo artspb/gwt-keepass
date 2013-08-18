@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * @author Artem Khvastunov
  */
-public class KeePassDataBaseV1Tree extends Tree {
+public class DataBaseV1Tree extends Tree {
 
     private KeePassDataBaseV1 base;
 
@@ -27,7 +27,7 @@ public class KeePassDataBaseV1Tree extends Tree {
         Map<Integer, HasTreeItems> map = new HashMap<Integer, HasTreeItems>();
         map.put(-1, this);
         for (Group group : groups) {
-            TreeItem item = new KeePassDataBaseTreeItem(group);
+            TreeItem item = new DataBaseTreeItem(group);
             short level = group.getLevel().getLevel();
             HasTreeItems parent = map.get(level - 1);
             parent.addItem(item);
@@ -38,7 +38,7 @@ public class KeePassDataBaseV1Tree extends Tree {
         for (Entry entry : entries) {
             if (!entry.getTitle().getText().equals("Meta-Info")) {
                 HasTreeItems parent = treeGroups.get(entry.getGroupId().getId());
-                parent.addItem(new KeePassDataBaseTreeItem(entry));
+                parent.addItem(new DataBaseTreeItem(entry));
             }
         }
     }

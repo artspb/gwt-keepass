@@ -1,16 +1,18 @@
 package me.artspb.gwt.keepass.client.ui;
 
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.github.gwtbootstrap.client.ui.Label;
+import com.github.gwtbootstrap.client.ui.TextBox;
+import com.github.gwtbootstrap.datetimepicker.client.ui.DateTimeBox;
+import com.google.gwt.user.client.ui.*;
 import pl.sind.keepass.kdb.v1.Entry;
+
+import java.util.Date;
 
 /**
  * @author Artem Khvastunov
  */
 public class EntryVerticalPanel extends VerticalPanel {
-    
+
     private final Entry entry;
 
     public EntryVerticalPanel(Entry entry) {
@@ -18,23 +20,43 @@ public class EntryVerticalPanel extends VerticalPanel {
 
         add(getPanel("groupId", String.valueOf(entry.getGroupId().getId())));
         add(getPanel("imageId", String.valueOf(entry.getImageId().getId())));
-        add(getPanel("title", String.valueOf(entry.getTitle().getText())));
-        add(getPanel("url", String.valueOf(entry.getUrl().getText())));
-        add(getPanel("username", String.valueOf(entry.getUsername().getText())));
-        add(getPanel("password", String.valueOf(entry.getPassword().getText())));
-        add(getPanel("notes", String.valueOf(entry.getNotes().getText())));
-        add(getPanel("creationTime", String.valueOf(entry.getCreationTime().getDate().toString())));
-        add(getPanel("lastModificationTime", String.valueOf(entry.getLastModificationTime().getDate().toString())));
-        add(getPanel("lastAccessTime", String.valueOf(entry.getLastAccessTime().getDate().toString())));
-        add(getPanel("expirationTime", String.valueOf(entry.getExpirationTime().getDate().toString())));
+
+        add(getPanel("title", entry.getTitle().getText()));
+        add(getPanel("url", entry.getUrl().getText()));
+        add(getPanel("username", entry.getUsername().getText()));
+        add(getPanel("password", entry.getPassword().getText()));
+        add(getPanel("notes", entry.getNotes().getText()));
+
+        add(getPanel("creationTime", entry.getCreationTime().getDate()));
+        add(getPanel("lastModificationTime", entry.getLastModificationTime().getDate()));
+        add(getPanel("lastAccessTime", entry.getLastAccessTime().getDate()));
+        add(getPanel("expirationTime", entry.getExpirationTime().getDate()));
     }
 
     private HorizontalPanel getPanel(String name, String content) {
         HorizontalPanel panel = new HorizontalPanel();
-        panel.add(new HTML(name));
+        panel.add(new Label(name));
         TextBox textBox = new TextBox();
         textBox.setText(content);
+        textBox.setReadOnly(true);
         panel.add(textBox);
+        return panel;
+    }
+
+    private HorizontalPanel getPanel(String name, Date content) {
+        HorizontalPanel panel = new HorizontalPanel();
+        panel.add(new Label(name));
+        DateTimeBox dateTimeBox = new DateTimeBox();
+        dateTimeBox.setValue(content);
+        dateTimeBox.setReadOnly(true);
+        panel.add(dateTimeBox);
+        return panel;
+    }
+
+    private HorizontalPanel getPanel(String name, Widget widget) {
+        HorizontalPanel panel = new HorizontalPanel();
+        panel.add(new Label(name));
+        panel.add(widget);
         return panel;
     }
 }

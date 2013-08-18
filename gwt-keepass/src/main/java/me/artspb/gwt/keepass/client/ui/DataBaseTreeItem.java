@@ -9,7 +9,7 @@ import pl.sind.keepass.kdb.v1.Group;
 /**
  * @author Artem Khvastunov
  */
-public class KeePassDataBaseTreeItem extends TreeItem {
+public class DataBaseTreeItem extends TreeItem {
 
     private final Entry entry;
     private final Group group;
@@ -18,13 +18,13 @@ public class KeePassDataBaseTreeItem extends TreeItem {
         return new SafeHtmlBuilder().appendEscaped(text).toSafeHtml();
     }
 
-    public KeePassDataBaseTreeItem(Entry entry) {
+    public DataBaseTreeItem(Entry entry) {
         super(getSafeHtml(entry.getTitle().getText()));
         this.entry = entry;
         this.group = null;
     }
 
-    public KeePassDataBaseTreeItem(Group group) {
+    public DataBaseTreeItem(Group group) {
         super(getSafeHtml(group.getGroupName().getText()));
         this.entry = null;
         this.group = group;

@@ -40,10 +40,10 @@ public class DataBaseLoadEndHandler implements LoadEndHandler {
                 KeePassDataBase base = KeePassDataBaseFactory.loadDataBase(bytes, holder.getKey(), password.length() == 0 ? null : password);
                 acceptor.setDataBase(base);
             } catch (KeePassDataBaseException e) {
-                acceptor.setMessage("error: " + e.getMessage());
+                acceptor.setErrorMessage("error: " + e.getMessage());
             }
         } else {
-            acceptor.setMessage("file upload error code: " + reader.getError().getCode());
+            acceptor.setErrorMessage("file upload error code: " + reader.getError().getCode());
         }
     }
 }

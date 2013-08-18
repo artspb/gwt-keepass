@@ -31,7 +31,7 @@ public class KeyLoadEndHandler implements LoadEndHandler {
             }
             acceptor.setKey(key);
         } else {
-            acceptor.setMessage("file upload error code: " + reader.getError().getCode());
+            acceptor.setErrorMessage("file upload error code: " + reader.getError().getCode());
         }
     }
 }

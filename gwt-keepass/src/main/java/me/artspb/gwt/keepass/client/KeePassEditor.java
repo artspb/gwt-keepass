@@ -1,20 +1,25 @@
 package me.artspb.gwt.keepass.client;
 
+import com.github.gwtbootstrap.client.ui.*;
+import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
+import com.google.gwt.user.client.ui.TreeItem;
 import me.artspb.gwt.keepass.client.handler.DataBaseLoadEndHandler;
 import me.artspb.gwt.keepass.client.handler.KeyLoadEndHandler;
 import me.artspb.gwt.keepass.client.interfaces.CredentialsProvider;
 import me.artspb.gwt.keepass.client.interfaces.DataBaseAcceptor;
-import me.artspb.gwt.keepass.client.interfaces.MessageAcceptor;
+import me.artspb.gwt.keepass.client.interfaces.ErrorMessageAcceptor;
 import me.artspb.gwt.keepass.client.interfaces.KeyAcceptor;
+import me.artspb.gwt.keepass.client.ui.BootstrapFileUpload;
+import me.artspb.gwt.keepass.client.ui.DataBaseTreeItem;
+import me.artspb.gwt.keepass.client.ui.DataBaseV1Tree;
 import me.artspb.gwt.keepass.client.ui.EntryVerticalPanel;
-import me.artspb.gwt.keepass.client.ui.KeePassDataBaseTreeItem;
-import me.artspb.gwt.keepass.client.ui.KeePassDataBaseV1Tree;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileReader;
 import org.vectomatic.file.FileUploadExt;
@@ -25,19 +30,16 @@ import pl.sind.keepass.kdb.v1.KeePassDataBaseV1;
 /**
  * @author Artem Khvastunov
  */
-public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvider, KeyAcceptor, DataBaseAcceptor, MessageAcceptor, SelectionHandler<TreeItem> {
+public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvider, KeyAcceptor, DataBaseAcceptor, ErrorMessageAcceptor, SelectionHandler<TreeItem> {
 
-    private final FileUploadExt dbUpload = new FileUploadExt(false);
-    private final FileUploadExt keyUpload = new FileUploadExt(false);
+    private final FileUploadExt dbUpload = new BootstrapFileUpload();
+    private final FileUploadExt keyUpload = new BootstrapFileUpload();
     private final PasswordTextBox passwordTextBox = new PasswordTextBox();
-    private final Button button = new Button("load");
-    private final Label label = new Label();
+    private final Button button = new Button();
+    private final FlowPanel alertPanel = new FlowPanel();
 
-    private final KeePassDataBaseV1Tree tree = new KeePassDataBaseV1Tree();
-
-    private final SplitLayoutPanel mainPanel = new SplitLayoutPanel();
-    private final Panel uploadPanel = new HorizontalPanel();
-    private final Panel entryPanel = new FlowPanel();
+    private final DataBaseV1Tree tree = new DataBaseV1Tree();
+    private final FlowPanel entryPanel = new FlowPanel();
 
     private final FileReader keyReader = new FileReader();
     private final FileReader dbReader = new FileReader();
@@ -45,26 +47,43 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
     private byte[] key = null;
 
     public void onModuleLoad() {
+        button.setText("load");
+        button.setLoadingText("loading...");
+        button.setCompleteText("loaded");
+
         keyReader.addLoadEndHandler(new KeyLoadEndHandler(keyReader, this));
         dbReader.addLoadEndHandler(new DataBaseLoadEndHandler(dbReader, this, this));
+
         button.addClickHandler(this);
         tree.addSelectionHandler(this);
 
-        uploadPanel.add(dbUpload);
-        uploadPanel.add(keyUpload);
-        uploadPanel.add(passwordTextBox);
-        uploadPanel.add(button);
+        button.setBlock(true);
 
-        mainPanel.addNorth(uploadPanel, 384);
-        mainPanel.addSouth(label, 100);
-        mainPanel.addWest(tree, 128);
-        mainPanel.add(entryPanel);
-
-        RootLayoutPanel.get().add(mainPanel);
+        Container container = new Container();
+        Row row = new Row();
+        row.add(new Column(6, alertPanel));
+        container.add(row);
+        row = new Row();
+        row.add(new Column(3, dbUpload));
+        row.add(new Column(3, keyUpload));
+        container.add(row);
+        row = new Row();
+        row.add(new Column(3, passwordTextBox));
+        row.add(new Column(3, button));
+        container.add(row);
+        row = new Row();
+        row.add(new Column(6));
+        container.add(row);
+        row = new Row();
+        row.add(new Column(3, tree));
+        row.add(new Column(3, entryPanel));
+        container.add(row);
+        RootLayoutPanel.get().add(container);
     }
 
     public void onClick(ClickEvent event) {
-        label.setText("");
+        reset("");
+        button.state().loading();
 
         File keyFile = keyUpload.getFiles().getItem(0);
         if (keyFile != null) {
@@ -83,24 +102,47 @@ public class KeePassEditor implements EntryPoint, ClickHandler, CredentialsProvi
     }
 
     public void setDataBase(KeePassDataBase dataBase) {
+        button.state().complete();
         tree.apply((KeePassDataBaseV1) dataBase);
     }
 
     public void setKey(byte[] key) {
         this.key = key;
         File dbFile = dbUpload.getFiles().getItem(0);
-        dbReader.readAsArrayBuffer(dbFile);
-    }
-
-    public void setMessage(String error) {
-        label.setText(error);
+        if (dbFile != null) {
+            dbReader.readAsArrayBuffer(dbFile);
+        } else {
+            reset("Nothing to load.");
+        }
     }
 
     public void onSelection(SelectionEvent<TreeItem> event) {
-        KeePassDataBaseTreeItem item = (KeePassDataBaseTreeItem) event.getSelectedItem();
+        DataBaseTreeItem item = (DataBaseTreeItem) event.getSelectedItem();
         if (item.isEntry()) {
             Entry entry = item.getEntry();
+            entryPanel.clear();
             entryPanel.add(new EntryVerticalPanel(entry));
         }
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        reset(errorMessage);
+    }
+
+    private void reset(String message) {
+        if (message.length() > 0) {
+            Alert alert = new Alert();
+            alert.setType(AlertType.WARNING);
+            alert.setHeading("Warning!");
+            alert.setText(message);
+            alert.setAnimation(true);
+            alertPanel.add(alert);
+        } else {
+            alertPanel.clear();
+        }
+
+        tree.clear();
+        entryPanel.clear();
+        button.state().reset();
     }
 }
